@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <strong>한국어</strong> · <a href="https://dsp.xdr.ooo/">제품 웹사이트</a>
+  <a href="README.md">English</a> · <strong>한국어</strong> · <a href="https://dsp.isoc.ooo/">제품 웹사이트</a>
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <strong>제품 웹사이트:</strong> <a href="https://dsp.xdr.ooo/">dsp.xdr.ooo</a>
+  <strong>제품 웹사이트:</strong> <a href="https://dsp.isoc.ooo/">dsp.isoc.ooo</a>
 </p>
 
 ---
@@ -59,7 +59,7 @@ flowchart LR
 한 번 설치:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/xdr-labs/xdr-poc-script/release/v1.4.0-rc/install-dsp.sh | bash
+curl -fsSL https://raw.githubusercontent.com/isoc-labs/xdr-poc-script/release/v1.4.0-rc/install-dsp.sh | bash
 ```
 
 일상 사용:
@@ -111,7 +111,7 @@ Webshell mode는 실제 원격 명령 실행을 포함할 수 있으므로 **격
 
 ## 문서
 
-- **제품 웹사이트:** https://dsp.xdr.ooo/
+- **제품 웹사이트:** https://dsp.isoc.ooo/
 - [Operator Menu](./docs/DSP_MENU.md)
 - [Bootstrap Install](./docs/DSP_BOOTSTRAP_INSTALL.md)
 - [Lab Guide](./RELEASE_1_0_LAB_GUIDE.md)

@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>English</strong> · <a href="README.ko.md">한국어</a> · <a href="https://dsp.xdr.ooo/">Product Website</a>
+  <strong>English</strong> · <a href="README.ko.md">한국어</a> · <a href="https://dsp.isoc.ooo/">Product Website</a>
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <strong>Product website:</strong> <a href="https://dsp.xdr.ooo/">dsp.xdr.ooo</a>
+  <strong>Product website:</strong> <a href="https://dsp.isoc.ooo/">dsp.isoc.ooo</a>
 </p>
 
 ---
@@ -73,7 +73,7 @@ Show latest report
 Review events / validation / traffic summary
 ```
 
-For the product guide and current operator documentation, start at **https://dsp.xdr.ooo/**.
+For the product guide and current operator documentation, start at **https://dsp.isoc.ooo/**.
 
 > Use DSP only on systems and networks you own or are explicitly authorized to test.
 
@@ -86,7 +86,7 @@ For the product guide and current operator documentation, start at **https://dsp
 Run this **once** on a new machine. It clones or updates the repo, creates `.venv`, installs DSP, and opens the menu.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/xdr-labs/xdr-poc-script/release/v1.4.0-rc/install-dsp.sh | bash
+curl -fsSL https://raw.githubusercontent.com/isoc-labs/xdr-poc-script/release/v1.4.0-rc/install-dsp.sh | bash
 ```
 
 Install only (no menu): `DSP_NO_LAUNCH=1 bash install-dsp.sh`
