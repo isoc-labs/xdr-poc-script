@@ -25,6 +25,29 @@ scenarios:
   - representative traffic-profile, model, operational-profile, and path-equality
     regressions remain green
   release_gate: false
+- id: DSP-PRODUCT-USE-OBSERVATION-001
+  cost: cheap
+  estimated_seconds: 10
+  timeout_seconds: 90
+  agent_default: true
+  scope: integration
+  name: Native product CLI usage observation including true dry-run artifact
+  level: integration
+  domains:
+  - core
+  triggers:
+  - affected
+  - pr
+  - preflight
+  - release
+  platforms:
+  - linux
+  command: python -m pytest -q tests/runner/test_user_activity_observation.py tests/runner/test_operational_cli.py
+  invariants:
+  - "each real public CLI run records a private local observation bound to version and readback"
+  - "target network, tokens, payloads and raw CLI arguments are not copied to observation"
+  - "dry-run receipts never claim actual external effect or Full User E2E PASS"
+  release_gate: true
 - id: ADOPTED-STATIC-001
   cost: cheap
   estimated_seconds: 2
