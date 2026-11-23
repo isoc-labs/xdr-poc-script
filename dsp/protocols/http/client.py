@@ -54,8 +54,14 @@ def send_request(
             context.verify_mode = ssl.CERT_NONE
 
     try:
-        opener = urllib.request.build_opener(_NoRedirectHandler)
-        with opener.open(req, timeout=timeout, context=context) as resp:
+        # OpenerDirector.open() does not accept a context= keyword. Inject
+        # HTTPSHandler at opener construction instead; HTTP requests never
+        # receive a TLS-specific handler or argument.
+        handlers = [_NoRedirectHandler]
+        if context is not None:
+            handlers.append(urllib.request.HTTPSHandler(context=context))
+        opener = urllib.request.build_opener(*handlers)
+        with opener.open(req, timeout=timeout) as resp:
             status_code = getattr(resp, "status", resp.getcode())
             summary = {
                 "status_code": status_code,

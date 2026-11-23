@@ -163,7 +163,9 @@ def run_local_lab(
         return LabRunResult(
             mode="local",
             scenario=scenario_id,
-            traffic_profile=profile.name,
+            # Report the operator-selected profile alias. The resolved
+            # canonical profile still controls execution parameters.
+            traffic_profile=traffic_profile.strip().lower(),
             run_id=run_id,
             output_dir=output_dir,
             run_dir=run_dir,
@@ -173,6 +175,7 @@ def run_local_lab(
                 "dry_run": dry_run,
                 "target_net": target_net,
                 "traffic_profile_description": profile.description,
+                "resolved_traffic_profile": profile.name,
                 "scenario_params": scenario_params.get(scenario_id, {}),
                 "dsp_exit_code": exit_code,
                 "run_status": run.status.value,
@@ -286,7 +289,9 @@ def run_webshell_lab(
         return LabRunResult(
             mode="webshell",
             scenario=scenario_id,
-            traffic_profile=profile.name,
+            # Report the operator-selected profile alias. The resolved
+            # canonical profile still controls execution parameters.
+            traffic_profile=traffic_profile.strip().lower(),
             run_id=run_id,
             output_dir=run_dir,
             run_dir=run_dir,
@@ -302,6 +307,7 @@ def run_webshell_lab(
                 "events_imported": collection_result.events_imported,
                 "collection_metadata": dict(collection_result.collection_metadata),
                 "scenario_params": scenario_params,
+                "resolved_traffic_profile": profile.name,
                 **artifact_metadata,
             },
         )
@@ -323,6 +329,9 @@ def _print_result(result: LabRunResult) -> None:
     print(f"mode={result.mode}")
     print(f"scenario={result.scenario}")
     print(f"traffic_profile={result.traffic_profile}")
+    resolved = result.metadata.get("resolved_traffic_profile")
+    if resolved and resolved != result.traffic_profile:
+        print(f"resolved_traffic_profile={resolved}")
     print(f"run_id={result.run_id}")
     print(f"output_dir={result.output_dir}")
     print(f"run_dir={result.run_dir}")
@@ -426,7 +435,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 def validate_args(args: argparse.Namespace) -> tuple[str, str, bool, tuple[str, ...], str | None]:
     run_id = args.run_id or _generate_run_id()
-    traffic_profile = parse_traffic_profile(args.traffic_profile)
+    # Validate the canonical mapping, but preserve the explicitly requested
+    # alias for user-visible evidence (balanced -> normal, burst -> high).
+    traffic_profile = args.traffic_profile.strip().lower()
+    parse_traffic_profile(traffic_profile)
     dry_run = bool(args.dry_run)
     remote_bundle_override = args.remote_bundle_path
 

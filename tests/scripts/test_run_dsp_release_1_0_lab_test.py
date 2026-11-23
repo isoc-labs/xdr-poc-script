@@ -116,6 +116,7 @@ def test_local_mode_passes_traffic_profile(tmp_path: Path) -> None:
         check=True,
     )
     assert "traffic_profile=balanced" in result.stdout
+    assert "resolved_traffic_profile=normal" in result.stdout
     assert "scenario=dummy" in result.stdout
 
 
