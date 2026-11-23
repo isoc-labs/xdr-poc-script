@@ -92,3 +92,63 @@ def test_send_request_http_does_not_pass_ssl_context():
     assert result.status_code == 302
     _, kwargs = opener.open.call_args
     assert "context" not in kwargs
+
+
+@pytest.mark.parametrize("verify_tls,expected_verify", [(True, True), (False, False)])
+def test_send_request_https_binds_tls_on_handler_not_opener_open(
+    verify_tls: bool, expected_verify: bool
+):
+    """SSL verification mode travels through HTTPSHandler, not opener.open."""
+    import ssl
+    import urllib.request
+
+    mock_resp = MagicMock()
+    mock_resp.__enter__.return_value = mock_resp
+    mock_resp.status = 200
+    mock_resp.getcode.return_value = 200
+    mock_resp.read.return_value = b""
+    with patch("urllib.request.build_opener") as build_opener:
+        opener = MagicMock()
+        opener.open.return_value = mock_resp
+        build_opener.return_value = opener
+        result = send_request("https://example.invalid/health", verify_tls=verify_tls)
+
+    assert result.outcome == "response"
+    handlers = build_opener.call_args.args
+    assert len(handlers) == 2
+    assert issubclass(handlers[0], urllib.request.HTTPRedirectHandler)
+    assert isinstance(handlers[1], urllib.request.HTTPSHandler)
+    ctx = handlers[1]._context
+    assert ctx.check_hostname is expected_verify
+    assert ctx.verify_mode == (ssl.CERT_REQUIRED if expected_verify else ssl.CERT_NONE)
+    _, options = opener.open.call_args
+    assert "context" not in options
+
+def test_send_request_real_loopback_http_open_handler_has_no_context():
+    """Real stdlib OpenerDirector rejects context kwarg even on plain HTTP."""
+    import threading
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    class LocalHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(204)
+            self.end_headers()
+
+        def log_message(self, *_args):
+            return
+
+    server = HTTPServer(("127.0.0.1", 0), LocalHandler)
+    worker = threading.Thread(target=server.serve_forever, daemon=True)
+    worker.start()
+    try:
+        response = send_request(
+            f"http://127.0.0.1:{server.server_address[1]}/health",
+            timeout=2.0,
+        )
+        assert response.outcome == "response"
+        assert response.status_code == 204
+        assert response.dry_run is False
+    finally:
+        server.shutdown()
+        server.server_close()
+        worker.join(timeout=3)
