@@ -88,6 +88,9 @@ def test_public_cli_dummy_dry_run_automatically_creates_receipt(tmp_path: Path):
     root = Path(__file__).resolve().parents[2]
     env = os.environ.copy()
     env["HOME"] = str(tmp_path)
+    # Another product test may set DSP_RUNS_DIR process-globally without
+    # restoring it; a real CLI user scenario must isolate its run root.
+    env.pop("DSP_RUNS_DIR", None)
     env["PYTHONPATH"] = str(root)
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     p = subprocess.run(
