@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import argparse
 import sys
+from pathlib import Path
 
 from dsp import __version__
 from dsp.plugins import PluginLoader
 from dsp.runner.console_output import OperationalConsole
 from dsp.runner.run_manager import RunManager
+from dsp.runner.user_activity_observation import ObservationError, record_cli_run
 from dsp.runtime.operational_profiles import (
     HOST_BEHAVIOR_CHECK_SCENARIO_ID,
     build_explicit_scenario_params_with_profile,
@@ -240,6 +242,23 @@ def main(argv: list[str] | None = None) -> int:
             on_progress=on_progress,
             max_hosts=args.max_hosts,
         )
+
+        # The native CLI collects a privacy-minimized observation on every run.
+        # It never upgrades product-use evidence to a Full User E2E claim.
+        try:
+            record_cli_run(
+                Path(run_dir),
+                run_id=run.run_id,
+                exit_code=exit_code,
+                dry_run=args.dry_run,
+                execution_provider=args.execution_provider,
+                scenario_count=len(scenario_ids),
+            )
+        except (ObservationError, OSError, TypeError) as exc:
+            print(
+                f"WARNING: native usage observation not recorded ({type(exc).__name__})",
+                file=sys.stderr,
+            )
 
         if not args.quiet:
             console.print_evidence_summary(run_dir)

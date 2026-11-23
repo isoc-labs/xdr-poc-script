@@ -273,6 +273,23 @@ dsp run --profile normal --target-net 10.10.10.0/24 \
 
 ---
 
+## Automatic local run observations
+
+Every completed public DSP run command now writes a privacy-minimized
+user_activity_observation.json beside the existing run.json,
+validation.json and report artifacts. The receipt captures product version,
+Git HEAD when the source checkout can be identified, dry-run status, scenario
+count, outcome/exit code and validation decision counts. It excludes command
+arguments, target IP/CIDR, credentials, request payloads and event contents.
+The local receipt is private (0600); there is no network upload or background telemetry.
+
+This records actual product CLI use, including failed/nonzero runs. It does
+not automatically prove acting-user identity, live traffic effects, complete
+scenario coverage, Full User E2E acceptance or release authorization. Full
+E2E still requires the owning product's actual scenario contract and independent
+observations. Missing source provenance is SOURCE_UNVERIFIED, not a fabricated
+Git commit.
+
 ## More documentation
 
 - [Operator menu](./docs/DSP_MENU.md)
